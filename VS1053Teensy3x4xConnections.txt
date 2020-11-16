@@ -32,7 +32,7 @@ Function 	Pin 17
 100k 	        Teensy 
 Potentiometer 	3.6 and 4.1  
 ============================== 
-Center 	 	Pin 15	 
+Center 	 	Pin 14	 
 Other	 	3v3 and GND	 
 	 		 
 
