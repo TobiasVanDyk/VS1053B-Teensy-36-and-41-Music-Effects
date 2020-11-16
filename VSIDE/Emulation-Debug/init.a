@@ -1,0 +1,185 @@
+
+//_____________________________________________________________
+//
+	.sect code,InitAudioExample	// 112 words
+	.export _InitAudioExample
+_InitAudioExample:
+	ldx (I6)+1,NULL	// I6 += 1
+	stx LR0,(I6)+1
+	stx I6,(I6) ; sty I4,(I6)
+	ldx (I6)+1,I4
+	stx A0,(I6) ; sty A1,(I6)+1
+	stx B0,(I6) ; sty I0,(I6)+1
+	ldc _applAddr,I0	// ET1
+	stx I1,(I6)+1 ; sty I2,(I6)
+	and NULL,NULL,A0 ; ldy (I4)-4,NULL	// I4 += -4
+// 	applAddr = 0;
+	stx A0,(I0)/*V*/	// ET0 ==> ET1
+// (*(__x volatile u_int16 *)(u_int16)(0xC003)) = coreClock;
+	ldc 49155,I0	// 49155 -> ET2
+	ldx (I4)+4,A0	// unspill 'coreClock' from #0
+// 	InitHardware();
+	call _InitHardware
+	stx A0,(I0)/*V*/	// 'coreClock' ==> ET2
+// jumped away
+	ldc 65523,A1	// 65523 -> 1 -> ET3
+	ldc 49153,I0	// 49153 -> ET4
+	ldx (I0),A0/*V*/ ; ldy (I4)-3,NULL	// I4 += -3
+// (*(__x volatile u_int16 *)(u_int16)(0xC001)) &= ~((1<< 2) | (1<< 3));
+	and A0,A1,A0	// ET5 and ET3 -> ET6
+	stx A0,(I0)-1/*V*/	// ET6 ==> ET4
+// 	if (useMicIn)
+	ldx (I4)+3,B0	// unspill 'useMicIn' from #-3
+	sub B0,NULL,B0 ; ldx (I0),A0/*V*/	// 'useMicIn' == (0) -> (0)
+	ldc 16384,A1	// 16384 -> 1 -> ETb
+	jzs F0B5	// signed compare
+	nop	// ET8 ==> ETc
+// jumped away
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xC000)) &= ~(1<< 14);
+	ldc 49151,A1	// 49151 -> 1 -> ET7
+	and A0,A1,A0	// ET9 and ET7 -> ETa
+F0B6:
+	stx A0,(I0)/*V*/	// ETa ==> ET8
+// 	uartByteSpeed = 11520U;
+	ldc 11520,A0	// 11520 -> 1 -> ETe
+	ldc _uartByteSpeed,I0	// ETf
+// (*(__x volatile u_int16 *)(u_int16)(0xC02B)) = UartDiv();
+	call _UartDiv
+	sty A0,(I0)/*V*/	// ETe ==> ETf
+// jumped away
+	ldc _agcConstsInit,I1	// I1
+	ldc 49195,I0	// 49195 -> ET11
+	stx A0,(I0)/*V*/	// ET10 ==> ET11
+// 	memcpyXY(agcConsts, agcConstsInit, sizeof(agcConsts));
+	ldc 7,A0	// 7 -> A0
+	call _memcpyXY
+	ldc _agcConsts,I0	// I0
+// jumped away
+// 	memset(&adcControl, 0, sizeof(adcControl));
+	ldc 12,A0	// 12 -> A0
+	and NULL,NULL,A1	// 0 -> A1
+	call _memset
+	ldc _adcControl,I0	// I0
+// jumped away
+// (*(__x volatile u_int16 *)(u_int16)(0xC00D)) = 1024;
+	ldc 1024,A0	// 1024 -> 1 -> ET1a
+	ldc 49165,I0	// 49165 -> ET1b
+	stx A0,(I0)+2/*V*/ ; sub B0,NULL,B0	// ET1a ==> ET1b
+// (*(__x volatile u_int16 *)(u_int16)(0xC00F)) = (1<<2);
+	ldc 4,A0	// 4 -> 1 -> ET1c
+// 	if (useMicIn)
+	jzs F0B11	// signed compare
+	stx A0,(I0)/*V*/	// ET1c ==> ET1d
+// jumped away
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xC00F)) |= 2;
+	lsr A0,A1 ; ldx (I0),A0/*V*/
+	or A0,A1,A0	// ET1f or ET1e -> ET20
+	stx A0,(I0)/*V*/	// ET20 ==> ET1d
+F0B11:
+// 	if ((*(__x volatile u_int16 *)(u_int16)(0xC00E)) == 0)
+	ldc 49166,I0	// 49166 -> ET21
+	ldx (I0),A0/*V*/	// ET21 ==> ET22
+	sub A0,NULL,A0	// ET22 != (0) -> (0)
+	ldc _adcControl+5,I2
+	jzc F0B13	// unsigned compare
+	ldc -32767,A0
+// jumped away
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xC00E)) = 65535U;
+	ldc 65535,A0	// 65535 -> 1 -> ET25
+	stx A0,(I0)/*V*/	// ET25 ==> ET21
+	ldc -32767,A0	// -32767 -> 0 -> ET26
+F0B13:
+	ldc _adcControl,I0	// ET18
+	stx A0,(I0)+7 ; ldy (I4)-2,NULL	// I4 += -2
+// 	adcControl.agc[0].gain = -32767;
+// 	adcControl.agc[1].gain = -32767;
+	stx A0,(I2) ; ldy (I0)+3,NULL	// ET26 ==> ET28
+// 	adcControl.adcMode =(*(__x volatile u_int16 *)(u_int16)(0xC00F)) & 3;
+	ldc 3,A0	// 3 -> 1 -> ET2b
+	ldc 49167,I2	// 49167 -> ET1d
+	ldx (I2),A1/*V*/	// ET1d ==> ET29
+	and A1,A0,A0	// ET29 and ET2b -> ET2c
+	stx A0,(I0)	// ET2c ==> ET18
+// 	if (srInput == 48000U)
+	ldc 48000,A0	// 48000 -> 1 -> ET30
+	ldx (I4)+2,B0	// unspill 'srInput' from #-2
+	sub B0,A0,A0	// 'srInput' == ET30 -> AT3f
+	ldc 5,A0	// 5 -> 1 -> ET31
+	jzs F0B14	// unsigned compare
+	ldc 49218,I0	// 49218 -> ET32
+// jumped away
+// else if (srInput == 24000U)
+	ldc 24000,A0	// 24000 -> 1 -> ET33
+	sub B0,A0,A0	// 'srInput' == ET33 -> AT40
+	ldc 7,A0
+	jzs F0B17	// unsigned compare
+	nop
+// jumped away
+// else if (srInput == 12000U)
+	ldc 12000,A0	// 12000 -> 1 -> ET34
+	sub B0,A0,B0	// 'srInput' != ET34 -> AT41
+	ldc 7,A0	// 7 -> 1 -> ET12
+	jzc F0B16	// unsigned compare
+	nop	// 49218 -> ET32
+// jumped away
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xc042)) = 1 | 6;
+	stx A0,(I0)/*V*/	// ET12 ==> ET32
+// (*(__x volatile u_int16 *)(u_int16)(0xC001)) |= (1<< 1);
+	ldc 2,A0	// 2 -> 1 -> ET1e
+	ldc 49153,I0	// 49153 -> ET4
+	ldx (I0),A1/*V*/	// ET4 ==> ET35
+	or A1,A0,A0	// ET35 or ET1e -> ET36
+	stx A0,(I0)/*V*/	// ET36 ==> ET4
+F0B16:
+// 	stream_rd_pointer = (u_int16 __x *)stream_buffer;
+	ldc _stream_buffer,A0	// ET37
+	ldc _stream_rd_pointer,I0	// ET39
+	sty A0,(I0)/*V*/	// ET38 ==> ET39
+// 	stream_wr_pointer = stream_rd_pointer;
+	ldc _stream_wr_pointer,I0	// ET3a
+	sty A0,(I0)/*V*/ ; and NULL,NULL,A0	// ET38 ==> ET3a
+// 	stream_rd_odd = 0;
+	ldc _stream_rd_odd,I0	// ET3b
+	sty A0,(I0)/*V*/	// ET17 ==> ET3b
+	ldy (I6),I2 ; ldx (I6)-1,I1
+	ldy (I6),I0 ; ldx (I6)-1,B0
+	ldy (I6),A1 ; ldx (I6)-1,A0
+	ldx (I4),I6 ; ldy (I4),I4
+	ldx (I6)-1,NULL	// I6 += -1
+	ldx (I6)-1,LR0
+	jr
+	nop
+// jumped away
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xc042)) = 1 | 6;
+	ldc 7,A0	// 7 -> 1 -> ET12
+	ldc 49218,I0	// 49218 -> ET32
+F0B17:
+	j F0B16
+	stx A0,(I0)/*V*/	// ET12 ==> ET32
+// jumped away
+F0B14:
+// 	}
+// {
+// (*(__x volatile u_int16 *)(u_int16)(0xc042)) = 1 | 4;
+	j F0B16
+	stx A0,(I0)/*V*/	// ET31 ==> ET32
+// jumped away
+F0B5:
+// 	}
+// else {
+// (*(__x volatile u_int16 *)(u_int16)(0xC000)) |= (1<< 14);
+	j F0B6
+	or A0,A1,A0	// ETc or ETb -> ETd
+// jumped away
+
+	.end

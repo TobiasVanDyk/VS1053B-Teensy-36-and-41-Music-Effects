@@ -1,0 +1,406 @@
+
+//_____________________________________________________________
+//
+	.sect code,main	// 232 words
+	.export _main
+_main:
+	ldc _delayBuffer,I3	// 'flgptr'
+	ldc _delayBuffer,B0	// 'bufptr'
+	ldc 134,I7
+	ldx (I6)+1,NULL ; and NULL,NULL,B1	// I6 += 1
+	stx LR0,(I6)+1 ; and NULL,NULL,D0
+	stx I6,(I6) ; sty I4,(I6)
+// bufptr
+// flgptr
+// phase
+// flangerSample
+// flangerPhase
+// ();
+	call _Enable
+	ldx (I6)*,I4
+// jumped away
+// 	applAddr = 0;
+	ldc _applAddr,I0	// ET4
+	ldc 0,A0	// 0 -> ET3
+	stx A0,(I0)/*V*/ ; or NULL,ONES,A0	// ET3 ==> ET4
+// 	effect.delay += (effect.depth/2)+1;
+	ldc _effect,I0	// ET5
+	ldx (I0),A1	// ET5 ==> ET6
+	ldc _effect+2,I0	// ETc
+	ashl A1,A0,A0	// ET6 << AT8 -> ET9
+	sub A0,ONES,A1 ; ldx (I0),A0	// ET9 - (-1) -> ETb
+	add A0,A1,A0	// ETd + ETb -> ETe
+	stx A0,(I0) ; and NULL,NULL,A1	// ETe ==> ETc
+// 	memsetY(delayBuffer, 0,8192);
+	ldc 8192,A0	// 8192 -> A0
+	call _memsetY
+	ldc _delayBuffer,I0	// I0
+// jumped away
+// 	Disable();
+	call _Disable
+	nop
+// jumped away
+	ldc 24576,A0	// 24576 -> 1 -> ET11
+	ldx (I6)+1,NULL	// I6 += 1
+// 	InitAudioExample(24000,0,0x6000);
+	stx A0,(I6)+1 ; and NULL,NULL,A0	// ET11
+	stx A0,(I6)+1	// ET1
+	ldc 24000,A0	// 24000 -> 1 -> ET12
+	call _InitAudioExample
+	stx A0,(I6)	// ET12
+// jumped away
+	ldc 2,C0	// 2 -> C0
+	ldx (I6)-2,NULL	// I6 += -3
+// 	SetHardware(2 ,24000 );
+	call _SetHardware
+	ldc 24000,C1	// 24000 -> C1
+// jumped away
+// (*(__x volatile u_int16 *)(u_int16)(0xC01A))|=(1<< 3) |(1<< 0);
+	ldc 49178,I0	// 49178 -> ET15
+	ldc 9,A1	// 9 -> 1 -> ET14
+	ldx (I0),A0/*V*/	// ET15 ==> ET16
+	or A0,A1,A0	// ET16 or ET14 -> ET17
+	stx A0,(I0)/*V*/ ; and NULL,NULL,A1	// ET17 ==> ET15
+// 	audio_rd_pointer = audio_buffer;
+	ldc _audio_rd_pointer,I0	// ET19
+	ldc _audio_buffer,A0	// ET18
+	sty A0,(I0)/*V*/	// ET18 ==> ET19
+// 	audio_wr_pointer = audio_buffer + 2* 64;
+	ldc _audio_wr_pointer,I0	// ET1c
+	ldc _audio_buffer+128,A0	// ET1b
+	sty A0,(I0)/*V*/	// ET1b ==> ET1c
+// 	memsetY(audio_buffer,0,4096);
+	ldc 4096,A0	// 4096 -> A0
+	call _memsetY
+	ldc _audio_buffer,I0	// I0
+// jumped away
+// ;}
+
+// {{(*(__x volatile u_int16 *)(u_int16)(0xC017)) |= (((1 << 4)));
+	ldc 49175,I0	// 49175 -> ET20
+	ldc 16,A1	// 16 -> 1 -> ET1f
+	ldx (I0),A0/*V*/	// ET20 ==> ET21
+	or A0,A1,A0	// ET21 or ET1f -> ET22
+	ldc 65527,A1	// 65527 -> 1 -> ET23
+	stx A0,(I0)/*V*/	// ET22 ==> ET20
+// ;}
+
+// ;
+// {{(*(__x volatile u_int16 *)(u_int16)(0xC017)) &= ~(((1 << 3)));
+	ldx (I0),A0/*V*/	// ET20 ==> ET24
+	and A0,A1,A0	// ET24 and ET23 -> ET25
+	stx A0,(I0)/*V*/	// ET25 ==> ET20
+// ;
+// (*(__x volatile u_int16 *)(u_int16)(0xC00B)) = 0x0101;
+	ldc 49163,I0	// 49163 -> ET27
+	ldc 257,A0	// 257 -> 1 -> ET26
+// 	Enable();
+	call _Enable
+	stx A0,(I0)/*V*/	// ET26 ==> ET27
+// jumped away
+F0B13:
+// 	}
+// {
+//         if (effect.delay == 8000)
+	ldc _effect+2,I0	// ETc
+	ldc 8000,A0	// 8000 -> 1 -> ET2a
+	ldx (I0),A1	// ETc ==> 2 -> ET29
+	sub A1,A0,A0	// ET29 == ET2a -> AT93
+	ldc 40,A1
+	jzc F0B15	// unsigned compare
+	ldx (I0),A0	// 40 -> 1 -> ET2c
+// jumped away
+// Button3 = 0;
+	ldc _Button3,I0	// ET2b
+	ldc 0,A0	// 0 -> 0 -> ET1
+	stx A0,(I0)/*V*/	// ET1 ==> ET2b
+//         if (effect.delay == 40)
+	ldc _effect+2,I0	// ETc
+	ldx (I0),A0	// ETc ==> 2 -> ET29
+F0B15:
+	sub A0,A1,A0	// ET29 == ET2c -> AT94
+	nop
+	jzc F0B17	// unsigned compare
+	nop
+// jumped away
+// Button3 = 1;
+	ldc _Button3,I0	// ET2b
+	sub NULL,ONES,A0	// 1 -> 0 -> ET28
+	stx A0,(I0)/*V*/	// ET28 ==> ET2b
+F0B17:
+// 		if (StreamDiff() > 64 *2)
+	call _StreamDiff
+	ldx (I6)+1,NULL	// I6 += 1
+// jumped away
+	mv A0,A1	// A0 -> ET2d
+	ldc 128,A0	// 128 -> 0 -> ET1a
+	sub A1,A0,A0	// ET2d > ET1a -> AT96
+	ldc 2048,A0	// 2048 -> 1 -> ET91
+	jle F0B19	// signed compare
+	ldc _effect,I0	// ET5
+// jumped away
+	ldc 128,A0	// 128 -> A0
+	ldx (I4)+7,NULL ; ldy (I6)+1,NULL	// I4 += 7
+	mv I4,I0	// I4 -> [] -> I0
+	mv I4,I2	// I4 -> [] -> 'sp'
+	mv I4,I1	// I4 -> [] -> 'lp'
+// 		}
+// temp
+// lp
+// sp
+// (lineInBuf, 2* 64);
+	call _StreamBufferReadData
+	ldx (I4)-7,NULL	// I4 += -7
+// jumped away
+// 			if (((*(__x volatile u_int16 *)(u_int16)(0xC018)) & (((1 << 3)))))
+	ldc 49176,I0	// 49176 -> ET30
+	ldc 8,A0	// 8 -> 1 -> ET33
+	ldx (I0),A1/*V*/	// ET30 ==> ET31
+	and A1,A0,A0	// ET31 and ET33 -> ET34
+	ldc _effect+5,I0	// ET3d
+	jzs F0B59	// compare against zero
+	ldc 65519,A1	// 65519 -> 1 -> ET38
+// jumped away
+// ;
+// 			   }
+//                            { effect.mix = 0;
+	ldc _effect+4,I0	// ET36
+	ldc 0,A0	// 0 -> 1 -> ET2
+	stx A0,(I0)	// ET2 ==> ET36
+//                              NoEffect = 0;
+	ldc _NoEffect,I0	// ET37
+	stx A0,(I0)/*V*/	// ET1 ==> ET37
+
+// {(*(__x volatile u_int16 *)(u_int16)(0xC019)) &= ~(((1 << 4)));
+	ldc 49177,I0	// 49177 -> ET39
+	ldx (I0),A0/*V*/	// ET39 ==> ET3a
+	and A0,A1,A0	// ET3a and ET38 -> ET3b
+F0B25:
+	stx A0,(I0)/*V*/ ; and NULL,NULL,A1	// ET3b ==> ET39
+// 			for (i = 0; i < 64; i++)
+F0B29:
+	ldc 64,A0	// 64 -> 1 -> ET41
+	sub A1,A0,A0	// 'i' < ET41 -> AT9a
+	ldc _effect+1,I0	// ET7e
+	jcs F0B27	// unsigned compare
+	ldc 65535,A0	// 65535 -> 1 -> ET44
+// jumped away
+// 			}
+// flangerOut
+	ldy (I3),C0 ; sub A0,B1,A0	// 'flgptr' ==> ET42
+	mulsu C0,A0	// ET42 * ET45 -> ET47
+	add NULL,P,C	// 16x16->32bit
+// (C2 already up to date)
+	add C1,NULL,A0 ; mv I3,C0	// ET4a lsw 'flangerOut'
+// (flgptr >= delayBuffer+ 8192 -1)
+	ldc _delayBuffer+8191,C1	// ET4e
+	sub C0,C1,C0	// AT9f >= ET4e -> AT98
+	nop
+	jlt F0B31	// signed compare
+	nop
+// jumped away
+// 				}
+// {
+// 					flgptr = delayBuffer;
+	ldc _delayBuffer,I3	// 'flgptr'
+F0B32:
+	ldc _effect+4,I0	// ET36
+	ldx (I4)+1,NULL	// I4 += 1
+	sty A1,(I4)+1	// ATa4 spills to #1
+// 				flangerOut += (s_int16)(((s_int32)*flgptr * flangerPhase) >> 16);
+	sty I3,(I4)-1	// 'flgptr' spills to #0
+	ldy (I3),C0 ; stx B0,(I4)+3	// 'flgptr' ==> ET51
+	stx B0,(I4) ; sty B1,(I4)-1	// B0 spills to #0
+	mv I2,I3 ; mulsu C0,B1	// ET51 * 'flangerPhase' -> ET54
+	add NULL,P,C ; ldy (I1),D1 ; stx D0,(I4)	// 16x16->32bit
+// (C2 already up to date)
+	add A0,C1,C0 ; ldx (I0)-1,A0	// 'flangerOut' + ET56 -> 'flangerOut'
+// 				*sp = (s_int16)(((s_int32)lp[0] * (32000U-effect.mix) +
+// 						(s_int32)flangerOut * effect.mix) >> 15);
+	ldc 32000,C1	// 32000 -> 1 -> ET5a
+	sub C1,A0,A1 ; sty D1,(I4)+2	// ET5a - ET5b -> ET5c
+	mulsu D1,A1 ; ldx (I3)+1,NULL	// ET58 * ET5c -> ET5e
+	add NULL,P,B ; ldx (I1)+2,NULL	// 16x16->32bit
+	mulsu C0,A0	// 'flangerOut' * ET5b -> ET61
+	ldc -15,C0	// -15 -> 0 -> ET64
+	add B,P,B	// ET5e + ET61 -> ET62
+	mv B1,B1	// update guard bits
+	ashl B,C0,B	// ET62 << ET64 -> ET65
+	stx B0,(I2)	// ET66 ==> 'sp'
+// 				*bufptr = (s_int16)(((s_int32)*sp++ * effect.decay +
+// 						(s_int32)lp[0] * (32000U-effect.decay)) >> 15);
+	ldx (I2),A1	// ET67 ==> ET69
+	ldx (I0),A0	// ET36 ==> 3 -> ET6d
+	mulsu A1,A0 ; stx C0,(I4)	// ET69 * ET6d -> ET6f
+	add NULL,P,B ; sty C1,(I4)-2	// 16x16->32bit
+	sub C1,A0,A0 ; ldx (I4),D0	// ET5a - ET6d -> ET70
+	ldy (I4)+2,D1	// unspill D1 from #0
+	mulsu D1,A0 ; ldx (I4)-1,C0	// ET58 * ET70 -> ET72
+	add B,P,B ; ldx (I2)+2,A0	// ET6f + ET72 -> ET73
+	mv B1,B1	// update guard bits
+	ashl B,C0,C ; ldx (I4),B0	// ET73 << ET64 -> ET74
+	mv B0,I0	// 'bufptr' -> ATa0
+	ldy (I4)-2,B1 ; stx A0,(I3)	// unspill B1 from #0
+	ldc _delayBuffer+8191,A0	// ET4e
+	sty C0,(I0)	// ET75 ==> ATa0
+// 				lp += 2;
+// 				sp[0] = sp[-1];
+// 				sp++;
+// 				if (bufptr	>= delayBuffer+ 8192 -1)
+	ldy (I4)-1,I3 ; sub B0,A0,A0	// unspill 'flgptr' from #0
+	ldy (I4)-1,A1	// unspill ATa4 from #1
+	jlt F0B34	// signed compare
+	nop
+// jumped away
+// 				}
+// {
+// 					bufptr = delayBuffer;
+	ldc _delayBuffer,B0	// 'bufptr'
+F0B35:
+	j F0B29
+	sub A1,ONES,A1	// 'i' - (-1) -> 'i'
+// jumped away
+F0B34:
+// 				}
+// else {
+// 					bufptr++;
+	j F0B35
+	sub B0,ONES,B0	// 'bufptr' - (-1) -> 'bufptr'
+// jumped away
+F0B31:
+// 				}
+// else {
+// 					flgptr++;
+	j F0B32
+	ldx (I3)+1,NULL	// 'flgptr' += 1
+// jumped away
+F0B27:
+// 			phase += effect.speed;
+	ldc _effect,I2	// ET5
+	ldx (I0)+1,A0	// ET7e ==> 1 -> ET7f
+	add D0,A0,D0 ; ldx (I2),A0	// 'phase' + ET7f -> 'phase'
+// 			}
+// tt
+	abs D0,A1	// 'phase' abs ET82
+	mulsu A1,A0 ; ldx (I0),A0	// ET82 * ET6 -> 'tt'
+	add NULL,P,C	// 16x16->32bit
+// = (u_int16)(tt >> 16);
+// 			flangerPhase = (u_int16)tt;
+// 			flgptr = bufptr + flangerSample - effect.delay;
+	add B0,C1,A1 ; mv C0,B1	// 'bufptr' + 'flangerSample' -> ET8c
+	sub A1,A0,A0	// ET8c - ET29 -> 'flgptr'
+// 			if (flgptr < delayBuffer)
+	ldc _delayBuffer,A1	// ET0
+	sub A0,A1,C0 ; mv A0,I3	// 'flgptr' < ET0 -> AT99
+	nop
+	jge F0B37	// signed compare
+	nop
+// jumped away
+// 			}
+// {
+// 				flgptr += 8192;
+	ldc 8192,A1	// 8192 -> 0 -> ET4c
+	add A0,A1,A0	// 'flgptr' + ET4c -> ET8e
+	mv A0,I3	// ET8e -> 'flgptr'
+F0B37:
+	ldc 64,A0	// 64 -> 0 -> ET8f
+	ldy (I6)+1,NULL ; ldx (I4)+7,NULL	// I4 += 7
+// 			AudioOutputSamples(auxBuffer,64);
+	stx A0,(I6)+1	// ET8f
+	call _AudioOutputSamples
+	stx I4,(I6)+1 ; ldy (I4)-7,NULL	// ET2f
+// jumped away
+	j F0B13
+	ldx (I6)-2,NULL	// I6 += -2
+// jumped away
+F0B59:
+// ;
+// 			          }
+// else { effect.mix = effect.mixOrg;
+	ldx (I0)-1,A0	// ET3d ==> 5 -> ET3e
+	stx A0,(I0) ; sub NULL,ONES,A0	// ET3e ==> ET3d
+//                                     NoEffect = 1;
+	ldc _NoEffect,I0	// ET37
+	stx A0,(I0)/*V*/	// ET28 ==> ET37
+
+// {(*(__x volatile u_int16 *)(u_int16)(0xC019)) |= (((1 << 4)));
+	ldc 49177,I0	// 49177 -> ET39
+	ldc 16,A0	// 16 -> 1 -> ET1f
+	ldx (I0),A1/*V*/	// ET39 ==> ET3f
+	j F0B25
+	or A1,A0,A0	// ET3f or ET1f -> ET40
+// jumped away
+F0B19:
+// 		       }
+// else {
+// 			if (effect.depth > 2048)
+	ldx (I0),A1	// ET5 ==> ET6
+	sub A0,A1,C0	// ET91 > ET6 -> AT95
+	ldc _effect+1,I2
+	jcs F0B40	// unsigned compare
+	nop	// ET7e
+// jumped away
+
+// { effect.depth = 2048;
+	stx A0,(I0)	// ET91 ==> ET5
+// 			if (effect.speed > 1024)
+F0B40:
+	ldc 1024,A0	// 1024 -> 1 -> ET92
+	ldx (I2),A1	// ET7e ==> 1 -> ET7f
+	sub A0,A1,C0	// ET92 > ET7f -> AT9c
+	nop
+	jcs F0B42	// unsigned compare
+	nop
+// jumped away
+
+// { effect.speed = 1024;
+	stx A0,(I2)	// ET92 ==> ET7e
+F0B42:
+// 			if (effect.mix > 32000)
+	ldc _effect+4,I2	// ET36
+	ldc 32000,A0	// 32000 -> 1 -> ET5a
+	ldx (I2),A1	// ET36 ==> 4 -> ET5b
+	sub A0,A1,C0	// ET5a > ET5b -> AT9d
+	nop
+	jcs F0B44	// unsigned compare
+	nop
+// jumped away
+
+// { effect.mix = 32000;
+	stx A0,(I2)	// ET5a ==> ET36
+F0B44:
+// 			if (effect.decay > 32000)
+	ldc _effect+3,I2	// ET6c
+	ldc 32000,A0	// 32000 -> 1 -> ET5a
+	ldx (I2),A1	// ET6c ==> 3 -> ET6d
+	sub A0,A1,A0	// ET5a > ET6d -> AT9e
+	ldc 32000,A0	// 32000 -> 1 -> ET5a
+	jcs F0B13	// unsigned compare
+	nop
+// jumped away
+
+// { effect.decay = 32000;
+	j F0B13
+	stx A0,(I2)	// ET5a ==> ET6c
+// jumped away
+
+//_____________________________________________________________
+//
+	.sect data_y,bss_y	// 8192 words
+_delayBuffer:
+	.bss 8192
+
+//_____________________________________________________________
+//
+	.sect data_x,init_x	// 8 words
+	.export _effect
+_effect:
+	.word 0, 0, 8000, 28000, 16000, 16000
+	.export _NoEffect
+_NoEffect:
+	.word 0
+	.export _Button3
+_Button3:
+	.word 0
+
+	.end
