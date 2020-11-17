@@ -1,4 +1,4 @@
-/********************************************************************** 
+/**************************************************************************************** 
   This is an example for the Adafruit VS1053 Codec Breakout
 
   Designed specifically to work with the Adafruit VS1053 Codec Breakout 
@@ -11,10 +11,10 @@
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
 
-  Code adapted by Tobias van Dyk: Arduino Uno  December 2017
-                                  Teensy 3x 4x November 2020
+  VSIDE Example Audio-Effects Code adapted by Tobias van Dyk: Arduino Uno  December 2017
+                                                              Teensy 3x 4x November 2020
  
- ***********************************************************************/
+ ***************************************************************************************/
  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  // This is a fully functional audio effects preamp using the VLSI VS1053b Audio DSP IC. 
  //
