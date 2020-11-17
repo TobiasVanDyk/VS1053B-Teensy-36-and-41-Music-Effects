@@ -11,7 +11,7 @@
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
 
-  Code adapted by Tobias van Dyk: Arduino Uno  December 2018
+  Code adapted by Tobias van Dyk: Arduino Uno  December 2017
                                   Teensy 3x 4x November 2020
  
  ***********************************************************************/
