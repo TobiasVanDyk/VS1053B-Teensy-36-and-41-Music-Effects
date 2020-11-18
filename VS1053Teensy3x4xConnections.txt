@@ -32,8 +32,8 @@ Function 	Pin 17
 10k 	        Teensy 
 Potentiometer 	3.6 and 4.1  
 ============================== 
-Center 	 	Pin 14	 
-Other	 	3v3 and GND	 
+Wiper 	 	Pin 14	 
+Ends	 	3v3 and GND	 
 	 		 
 
 		 
