@@ -29,7 +29,7 @@ Up 	 	Pin 15
 Down	 	Pin 16	 
 Function 	Pin 17
 
-100k 	        Teensy 
+10k 	        Teensy 
 Potentiometer 	3.6 and 4.1  
 ============================== 
 Center 	 	Pin 14	 
