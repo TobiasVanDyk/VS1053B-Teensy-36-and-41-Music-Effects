@@ -5,4 +5,6 @@ VS1053 Teensy36 and Teensy41 Music Effects Player
 <img src="images/Teensy36and41.jpg" width="700" /> 
 <br>
 
-	
+<p align="left">
+<img src="images/connect.jpg" width="702" /> 
+<br>
