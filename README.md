@@ -1,7 +1,6 @@
 # VS1053B-Teensy-36-and-41-Music-Effects
-VS1053 Teensy3.6 and Teensy4.1 Music Effects Player
 
-Note: The Adafruit VS1053 libraries are not used.
+A VS1053 Teensy 3.6 and Teensy 4.1 Music Special Effects Box. *Also note that the Adafruit VS1053 libraries are not required.*
 
 <p align="left">
 <img src="images/Teensy36and41.jpg" width="700" /> 
